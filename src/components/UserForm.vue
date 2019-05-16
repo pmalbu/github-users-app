@@ -7,9 +7,9 @@
             v-model="username"
     />
     <button type="submit">Add card</button>
-    <div v-for="(deet, index) in userDetails"
+    <div v-for="(value, index) in userDetails"
     :key="index">
-      {{index}}: {{deet}}
+      {{index}}: {{value}}
     </div>
     <p v-if="errorStatus">{{errorStatus}}</p>
     <p v-if="errorText">{{errorText}}</p>
