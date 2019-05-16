@@ -8,7 +8,7 @@
     />
     <button type="submit">Add card</button>
     <div v-for="(value, index) in userDetails"
-    :key="index">
+        :key="index">
       {{index}}: {{value}}
     </div>
     <p v-if="errorStatus">{{errorStatus}}</p>
