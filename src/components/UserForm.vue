@@ -7,6 +7,8 @@
             v-model="username"
     />
     <button type="submit">Add card</button>
+      <br><br>
+    <img width="100" :src="avatar_url">
     <div v-for="(value, index) in userDetails" :key="index">
       {{index}}: {{value}}
     </div>
@@ -31,7 +33,8 @@
         rateLimitReset: '',
         errorStatus: '',
         errorText: '',
-        userDetails: []
+        userDetails: [],
+        avatar_url: ''
       }
     },
     methods: {
@@ -44,7 +47,10 @@
             let values = Object.values(resp.data);
 
             for (let i=0; i < keys.length; i++) {
-              this.userDetails.push(keys[i] + ': ' + values[i]);
+              if (keys[i] !== "avatar_url")
+                this.userDetails.push(keys[i] + ': ' + values[i]);
+              else
+                this.avatar_url = values[i]
             }
           })
           .catch(error => {
