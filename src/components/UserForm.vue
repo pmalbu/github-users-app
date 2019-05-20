@@ -8,10 +8,6 @@
     />
     <button type="submit">Add card</button>
       <br><br>
-    <img width="100" :src="avatar_url">
-    <div v-for="(value, index) in userDetails" :key="index">
-      {{index}}: {{value}}
-    </div>
     <p v-if="errorStatus">{{errorStatus}}</p>
     <p v-if="errorText">{{errorText}}</p>
     <p>Rate Limit: {{rateLimit}}</p>
@@ -33,32 +29,38 @@
         rateLimitReset: '',
         errorStatus: '',
         errorText: '',
-        userDetails: [],
-        avatar_url: ''
       }
     },
     methods: {
       addUser: function() {
-        axios.get(`https://api.github.com/users/${this.username}`)
-          .then(resp => {
-            this.clear();
-            this.setRateLimitParams(resp.headers);
-            let keys = Object.keys(resp.data);
-            let values = Object.values(resp.data);
+        if (null == this.$store.getters.users.find(user => user.login === this.username)) {
+          axios.get(`https://api.github.com/users/${this.username}`)
+            .then(resp => {
+              this.clear();
+              this.setRateLimitParams(resp.headers);
+              this.$store.commit('addGithubUser', resp.data);
+              this.username = ''
 
-            for (let i=0; i < keys.length; i++) {
-              if (keys[i] !== "avatar_url")
-                this.userDetails.push(keys[i] + ': ' + values[i]);
-              else
-                this.avatar_url = values[i]
-            }
-          })
-          .catch(error => {
-            this.clear();
-            this.errorStatus = error.response.status + ' ' + error.response.statusText
-            this.errorText = error.response.data.message
-            this.setRateLimitParams(error.response.headers)
-          })
+              // let keys = Object.keys(resp.data);
+              // let values = Object.values(resp.data);
+              //
+              // for (let i=0; i < keys.length; i++) {
+              //   if (keys[i] !== "avatar_url")
+              //     this.userDetails.push(keys[i] + ': ' + values[i]);
+              //   else
+              //     this.avatar_url = values[i]
+              // }
+            })
+            .catch(error => {
+              this.clear();
+              this.errorStatus = error.response.status + ' ' + error.response.statusText
+              this.errorText = error.response.data.message
+              this.setRateLimitParams(error.response.headers)
+            })
+          }
+        else {
+            alert('you already added "' + this.username + '"!')
+        }
       },
       setRateLimitParams(headers) {
         this.rateLimit = headers['x-ratelimit-limit'];
@@ -67,7 +69,6 @@
         this.rateLimitReset = seconds + ' seconds (' + (seconds / 60).toFixed(2) + ' minutes)';
       },
       clear() {
-        this.userDetails = []
         this.errorStatus = ''
         this.errorText = ''
       }
